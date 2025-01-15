@@ -4,10 +4,11 @@ services:
   oba_bundler:
     build:
       context: ./bundler
+      dockerfile: Dockerfile  # Ensure the Dockerfile is present in the bundler directory
     volumes:
       - ./bundle:/bundle
     environment:
-      - GTFS_URL
+      - GTFS_URL=${GTFS_URL:-default_value}  # Ensure GTFS_URL is set, default if needed
 
   oba_database_pg:
     image: postgres:16
@@ -30,14 +31,14 @@ services:
       - oba_database_pg
     build:
       context: ./oba
+      dockerfile: Dockerfile  # Ensure the Dockerfile is present in the oba directory
     environment:
       - JDBC_URL=jdbc:postgresql://oba_database_pg:5432/oba_database
       - JDBC_DRIVER=org.postgresql.Driver
       - JDBC_USER=oba_user
       - JDBC_PASSWORD=oba_password
-      - TEST_API_KEY=test # For test only, remove in production
+      - TEST_API_KEY=${TEST_API_KEY:-test}  # Ensure TEST_API_KEY is set, default if needed
       - TZ=America/Los_Angeles
-
     volumes:
       - ./bundle:/bundle
     ports:
