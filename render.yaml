@@ -3,7 +3,7 @@ services:
     name: OneBusAway API Server
     runtime: image
     image:
-      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.5.13-otsf-v3.0.0
+      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.5.13-otsf-v3.0.0  # If using public image or replace with custom Docker image
     region: oregon
     plan: standard
     numInstances: 1
@@ -11,39 +11,39 @@ services:
     autoDeploy: true
     envVars:
       - key: TZ
-        sync: false
+        value: "America/Los_Angeles"  # Set your desired timezone
       - key: GTFS_URL
-        sync: false
+        sync: false  # Set the correct GTFS URL or keep it empty for dynamic assignment
       - key: VEHICLE_POSITIONS_URL
-        sync: false
+        sync: false  # Set the vehicle positions URL as needed
       - key: TRIP_UPDATES_URL
-        sync: false
+        sync: false  # Set the trip updates URL as needed
       - key: ALERTS_URL
-        sync: false
+        sync: false  # Set the alerts URL as needed
       - key: FEED_API_KEY
-        sync: false
+        sync: false  # Set feed API key or any required key
       - key: FEED_API_VALUE
-        sync: false
+        sync: false  # Set the feed API value or any required value
       - key: REFRESH_INTERVAL
-        value: 30
+        value: 30  # Update interval for data refresh in seconds
       - key: AGENCY_ID
-        sync: false
+        sync: false  # Set the agency ID as needed
       - key: JDBC_USER
         fromDatabase:
           name: oba-postgresql
-          property: user
+          property: user  # User from the database credentials
       - key: JDBC_PASSWORD
         fromDatabase:
           name: oba-postgresql
-          property: password
+          property: password  # Password from the database credentials
       - key: JDBC_URL
         fromDatabase:
           name: oba-postgresql
-          property: connectionString
+          property: connectionString  # Database connection string
       - key: JDBC_DRIVER
-        value: org.postgresql.Driver
+        value: org.postgresql.Driver  # Driver for PostgreSQL
       - key: PORT
-        value: 8080
+        value: 8080  # Port number for the API
     disk:
       name: Bundle
       mountPath: /bundle
@@ -52,4 +52,4 @@ services:
 databases:
   - name: oba-postgresql
     databaseName: obadb
-    plan: basic-256mb
+    plan: basic-256mb  # Database plan, adjust as necessary (e.g., use a larger plan if needed)
