@@ -19,32 +19,20 @@ spec:
         app: oba-database
     spec:
       containers:
-        - name: oba-database
-          image: mysql:8.4
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: oba-secrets
-                  key: MYSQL_ROOT_PASSWORD
-            - name: MYSQL_DATABASE
-              value: oba_database
-            - name: MYSQL_USER
-              value: oba_user
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: oba-secrets
-                  key: MYSQL_PASSWORD
-          ports:
-            - containerPort: 3306
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mysql-data
-      volumes:
-        - name: mysql-data
-          hostPath:
-            path: /var/lib/oba/mysql
+      - name: oba-database
+        image: postgres:latest  # Switch to PostgreSQL image
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: oba-secrets
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_USER
+            value: oba_user
+          - name: POSTGRES_DB
+            value: oba_database
+        ports:
+          - containerPort: 5432  # Use PostgreSQL default port (5432)
 ---
 apiVersion: v1
 kind: Service
@@ -56,8 +44,8 @@ spec:
     app: oba-database
   ports:
     - protocol: TCP
-      port: 3306
-      targetPort: 3306
+      port: 5432   # Match PostgreSQL port (5432)
+      targetPort: 5432
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -91,7 +79,7 @@ spec:
           image: oba/app:test
           env:
             - name: JDBC_URL
-              value: jdbc:mysql://oba-database.oba.svc.cluster.local:3306/oba_database
+              value: jdbc:postgresql://oba-database.oba.svc.cluster.local:5432/oba_database  # Update JDBC URL for PostgreSQL
             - name: JDBC_USER
               value: oba_user
             - name: JDBC_PASSWORD
@@ -115,9 +103,8 @@ metadata:
   namespace: oba
 type: Opaque
 data:
-  MYSQL_ROOT_PASSWORD: SW5zM2N1cmUh
-  MYSQL_PASSWORD: b2JhX3Bhc3N3b3Jk
-  JDBC_PASSWORD: b2JhX3Bhc3N3b3Jk
+  POSTGRES_PASSWORD: b2JhX3Bhc3N3b3Jk  # Updated for PostgreSQL password
+  JDBC_PASSWORD: b2JhX3Bhc3N3b3Jk    # Same password for JDBC connection
 ---
 apiVersion: v1
 kind: ConfigMap
